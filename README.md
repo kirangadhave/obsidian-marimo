@@ -1,14 +1,83 @@
 # obsidian-marimo
 
-Obsidian plugin to embed and render [marimo](https://marimo.io) notebooks inline in notes.
+Obsidian plugin that renders [marimo](https://marimo.io) cells as live, reactive
+WASM islands inside notes. Python runs in-browser via Pyodide — no server, no
+local Python install.
 
-Current state: hello-world scaffold. A `marimo` code block renders a styled placeholder:
+## Usage
+
+Write cells in a `marimo` fence:
 
 ````markdown
 ```marimo
-_notebooks/finances.py
+import marimo as mo
+slider = mo.ui.slider(0, 10, value=3)
+slider
+```
+
+```marimo
+slider.value * 2
 ```
 ````
+
+All `marimo` blocks in one note share a single reactive notebook: moving the
+slider reruns the dependent cell below it.
+
+marimo's own [notebook-as-markdown format](https://docs.marimo.io/guides/exporting/markdown/)
+is also supported — fences like ```` ```python {.marimo} ```` are upgraded to
+islands, so a file produced by `marimo export md notebook.py` renders as a
+runnable notebook when opened in Obsidian.
+
+## How it works
+
+Built on [marimo islands](https://docs.marimo.io/guides/island_example/), the
+same runtime behind marimo-anywhere (quarto-marimo, jupyter-book-marimo,
+mdx-marimo):
+
+1. Each code block is rendered into the DOM contract the islands runtime
+   expects:
+   ```html
+   <marimo-island data-app-id="note-…" data-reactive="true">
+     <marimo-cell-output>…</marimo-cell-output>
+     <marimo-cell-code hidden><!-- URL-encoded Python --></marimo-cell-code>
+   </marimo-island>
+   ```
+2. The [`@marimo-team/islands`](https://www.npmjs.com/package/@marimo-team/islands)
+   runtime (pinned in `src/main.ts`, versioned in lockstep with marimo) is
+   dynamically imported from jsDelivr on first use, along with its stylesheet.
+3. Its exported `initialize()` scans the DOM, stitches all islands with the same
+   `data-app-id` into one notebook file, and executes it in a Pyodide web
+   worker. `initialize()` is idempotent, so it is re-called (debounced) as
+   Obsidian renders blocks.
+
+Unlike the static-site integrations, no build-time Python step is needed — the
+runtime executes the embedded code client-side; build-time output is only a
+hydration nicety.
+
+## Vendoring / offline
+
+```bash
+./scripts/vendor-islands.sh   # islands runtime (~29 MB) → vendor/islands
+./scripts/vendor-pyodide.sh   # Pyodide core + boot wheels (~20 MB) → vendor/pyodide
+```
+
+With both vendored, notebooks using marimo + the Python stdlib run fully
+offline; the plugin falls back to jsDelivr when vendor/ is absent. The pyodide
+script also patches the vendored worker chunk to honor
+`globalThis.__PYODIDE_BASE__` / `__MARIMO_LOCK__`, which the plugin injects
+via its worker shim.
+
+## Caveats
+
+- Extra package imports in notebooks (numpy, pandas, …) still fetch from the
+  CDN at runtime — vendoring covers the marimo core only.
+- Obsidian quirks handled by the plugin (see comments in `src/main.ts`):
+  Electron's `process` in workers breaks Pyodide's environment detection
+  (worker shim), CSP blocks remote styles (inlined, titled "marimo-islands" so
+  shadow roots adopt it), live-preview/reading-view DOM duplication (only
+  visible islands are reactive), and recreated block DOM rebinding without a
+  kernel restart (data-mo-code + cell index map).
+- Islands are marked an early/experimental feature upstream.
 
 ## Development
 
@@ -16,14 +85,11 @@ _notebooks/finances.py
 pnpm install
 pnpm dev    # watch build
 pnpm build  # type-check + production build
+pnpm vault  # scaffold + open the demo vault (examples/demo-vault) in Obsidian
 ```
 
-To test in a vault, symlink (or copy) this folder into
-`<vault>/.obsidian/plugins/marimo/` so it contains `manifest.json`, `main.js`,
-and `styles.css`, then enable "Marimo" in Community plugins.
-
-## Direction
-
-Reuse the WASM mount pattern from
-[marimo-glance](https://github.com/marimo-team/marimo-glance) to render
-notebooks live inside notes.
+`pnpm vault` symlinks the plugin into the test vault and opens it via the
+`obsidian://` URL scheme; on first open, choose "Trust author and enable
+plugins". For any other vault, symlink this folder into
+`<vault>/.obsidian/plugins/marimo/` and enable "Marimo" in Community plugins.
+The "Reinitialize notebooks in open notes" command forces a re-scan.
