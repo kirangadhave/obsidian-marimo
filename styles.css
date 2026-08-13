@@ -1,6 +1,85 @@
-.marimo-placeholder {
-	border: 1px dashed var(--interactive-accent);
+/* hidden host for per-notebook bootstrap cells (the `vault` helper) */
+.marimo-bootstrap-container {
+	display: none;
+}
+
+/* marimo themes via CSS light-dark(), which resolves from color-scheme */
+.theme-dark .marimo-island-block {
+	color-scheme: dark;
+}
+
+.theme-light .marimo-island-block {
+	color-scheme: light;
+}
+
+.marimo-island-block {
+	border: 1px solid var(--background-modifier-border);
 	border-radius: var(--radius-m);
 	padding: var(--size-4-3);
+	margin: var(--size-4-2) 0;
+	background: var(--background-primary);
+}
+
+.marimo-island-loading {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
 	color: var(--text-muted);
+	font-size: var(--font-smaller);
+	padding: var(--size-4-1) 0;
+}
+
+/* the marimo mark, gently bobbing */
+.marimo-loading-logo {
+	width: 22px;
+	height: 22px;
+	flex-shrink: 0;
+	animation: marimo-bob 1.6s ease-in-out infinite;
+}
+
+@keyframes marimo-bob {
+	0%,
+	100% {
+		transform: translateY(0) scale(1);
+	}
+	50% {
+		transform: translateY(-3px) scale(1.06);
+	}
+}
+
+.marimo-loading-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	flex: 1;
+	min-width: 0;
+}
+
+.marimo-loading-text {
+	transition: opacity 200ms ease;
+}
+
+.marimo-loading-bar {
+	height: 3px;
+	border-radius: 999px;
+	overflow: hidden;
+	background: color-mix(in srgb, #10b981 18%, transparent);
+	max-width: 260px;
+}
+
+.marimo-loading-bar-fill {
+	height: 100%;
+	width: 40%;
+	border-radius: 999px;
+	background: linear-gradient(90deg, #34d399, #059669);
+	animation: marimo-slide 1.4s ease-in-out infinite;
+}
+
+@keyframes marimo-slide {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(350%);
+	}
 }

@@ -30,6 +30,7 @@ const context = await esbuild.context({
 		"@lezer/lr",
 		...builtins,
 	],
+	loader: { ".png": "dataurl", ".py": "text" },
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",

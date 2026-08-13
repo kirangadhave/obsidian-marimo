@@ -2,3 +2,19 @@ node_modules/
 main.js
 *.map
 .DS_Store
+
+# regenerate with scripts/vendor-islands.sh
+vendor/
+
+# written at runtime by the plugin (through the demo-vault plugin symlink)
+vault-index.json
+
+# demo vault session state (plugin symlink is recreated by scripts/open-vault.sh)
+examples/demo-vault/.obsidian/plugins/
+examples/demo-vault/.obsidian/workspace.json
+examples/demo-vault/.obsidian/app.json
+examples/demo-vault/.obsidian/appearance.json
+examples/demo-vault/.obsidian/core-plugins.json
+
+# machine-local Conductor config
+.conductor/settings.local.toml
