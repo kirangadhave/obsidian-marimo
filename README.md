@@ -94,3 +94,17 @@ plugins". For any other vault, symlink this folder into
 `<vault>/.obsidian/plugins/marimo-islands/` and enable "marimo islands" in
 Community plugins.
 The "Reinitialize notebooks in open notes" command forces a re-scan.
+
+## Release
+
+Release prep lands through a normal PR. The workflow never pushes to `main`.
+
+1. `node scripts/pin-islands.mjs` — pin the islands runtime to the latest
+   marimo release.
+2. `node scripts/version-bump.mjs <x.y.z>` — set the version in
+   `package.json`, `manifest.json`, and `versions.json`.
+3. Open a PR with these changes and merge it.
+4. Run the "Release" workflow from the Actions tab. It builds, tags `main`
+   with the manifest version, and creates a draft GitHub release with
+   `main.js`, `manifest.json`, and `styles.css`.
+5. Review and publish the draft release.
