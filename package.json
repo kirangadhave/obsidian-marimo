@@ -1,8 +1,9 @@
 {
-	"name": "obsidian-marimo",
+	"name": "marimo-islands",
 	"version": "0.1.0",
-	"description": "Embed and render marimo notebooks inline in Obsidian notes.",
+	"description": "Run marimo notebooks as live, reactive Python cells inside your notes. Python runs in-browser via Pyodide.",
 	"main": "main.js",
+	"packageManager": "pnpm@9.1.1",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",

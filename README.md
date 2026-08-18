@@ -1,4 +1,4 @@
-# obsidian-marimo
+# marimo islands
 
 Obsidian plugin that renders [marimo](https://marimo.io) cells as live, reactive
 WASM islands inside notes. Python runs in-browser via Pyodide — no server, no
@@ -91,5 +91,6 @@ pnpm vault  # scaffold + open the demo vault (examples/demo-vault) in Obsidian
 `pnpm vault` symlinks the plugin into the test vault and opens it via the
 `obsidian://` URL scheme; on first open, choose "Trust author and enable
 plugins". For any other vault, symlink this folder into
-`<vault>/.obsidian/plugins/marimo/` and enable "Marimo" in Community plugins.
+`<vault>/.obsidian/plugins/marimo-islands/` and enable "marimo islands" in
+Community plugins.
 The "Reinitialize notebooks in open notes" command forces a re-scan.
