@@ -12,7 +12,7 @@ import obsidianPy from "../assets/obsidian_marimo.py";
  * matching marimo wheel + Pyodide at this version, so bumping this constant
  * upgrades the whole stack.
  */
-const ISLANDS_VERSION = "0.23.16";
+const ISLANDS_VERSION = "0.24.0";
 const CDN_BASE = `https://cdn.jsdelivr.net/npm/@marimo-team/islands@${ISLANDS_VERSION}/dist`;
 
 interface IslandsRuntime {
